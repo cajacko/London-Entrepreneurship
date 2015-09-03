@@ -6291,6 +6291,11 @@ button.close {
 #calendar {
   width: 100%;
   background-color: white;
+  margin-top: 67px;
+}
+#calendar th,
+#calendar .day-of-the-month {
+  font-size: 0.9em;
 }
 #calendar thead {
   position: fixed;
@@ -6333,11 +6338,12 @@ button.close {
 #calendar td .day-of-month {
   text-align: right;
   color: #AFAFAF;
+  margin-bottom: 9px;
 }
 #calendar td .month-inline-title {
   position: absolute;
   top: -24px;
-  background-color: #E0E0E0;
+  background-color: rgba(224, 224, 224, 0.84);
   font-size: 2em;
   padding: 7px 20px;
   border-radius: 5px;
@@ -6353,9 +6359,17 @@ button.close {
   margin: 0;
   padding: 0;
 }
-#calendar td ul li .event-start,
-#calendar td ul li .event-time-seperator,
-#calendar td ul li .event-end {
-  font-size: 0.5em;
+#calendar td ul li h3,
+#calendar td ul li .event-start {
+  font-size: 0.8em;
+  line-height: 1.5;
+}
+#calendar td ul li h3 {
+  font-weight: 400;
+  margin: 0;
+  float: left;
+}
+#calendar td ul li .event-start {
   color: grey;
+  float: right;
 }

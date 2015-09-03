@@ -52,7 +52,26 @@ ADD STYLES AND SCRIPTS
 	}
 	
 	add_action( 'wp_enqueue_scripts', 'london_entrepreneurship_scripts' );
+
+/* -----------------------------
+DISPLAY THE CALENDAR
+----------------------------- */
+	function london_entrepreneurship_register_events_post_type() {
+		register_post_type( 'event',
+			array(
+				'labels' => array(
+					'name' => __( 'Events' ),
+					'singular_name' => __( 'Event' )
+				),
+			)
+		);
+	}
 	
+	add_action( 'init', 'london_entrepreneurship_register_events_post_type' );
+	
+/* -----------------------------
+DISPLAY THE CALENDAR
+----------------------------- */	
 	function london_entrepreneurship_display_calendar($year = false, $month = false, $day = false, $active_month = true) {
 		if( !$year ) {
 			$year = date( 'Y' );	
@@ -96,7 +115,7 @@ ADD STYLES AND SCRIPTS
 						$offset = $current_day_of_week - 1;
 						$current_date = strtotime( $date_string . ' -' . $offset . 'days' );
 					}
-
+					
 					for( $i = 1; $i <= 140; $i++ ) {
 						$current_day_of_month = date( 'd', $current_date );
 						$current_day_of_week = date( 'N', $current_date );
@@ -108,7 +127,7 @@ ADD STYLES AND SCRIPTS
 						<?php endif; ?>
 							
 						<td class="<?php if( $current_day_of_week < 6 ): echo 'weekday'; else: echo 'weekend'; endif; ?><?php if( $active_month && $current_month == $month ): echo ' active-month'; endif; ?>">
-							<?php if( ( $end_of_month - 7 ) < $current_day_of_month && $current_day_of_week == 1 ): ?>
+							<?php if( ( $end_of_month - 7 ) < $current_day_of_month && $current_day_of_week == 1 && $i > 7): ?>
 								<span class="month-inline-title">
 									<?php 
 										$next_month = $current_month + 1;
@@ -126,9 +145,9 @@ ADD STYLES AND SCRIPTS
 								<?php echo $current_day_of_month; ?>
 							</div>
 							<ul>
-								<li><span class="event-start">17:00</span><span class="event-time-seperator">-</span><span class="event-end">19:00</span>Event title</li>
-								<li><span class="event-start">17:00</span><span class="event-time-seperator">-</span><span class="event-end">19:00</span>Event title</li>
-								<li><span class="event-start">17:00</span><span class="event-time-seperator">-</span><span class="event-end">19:00</span>Event title</li>
+								<li class="clearfix"><h3>Event title</h3><span class="event-start">17:00</span></li>
+								<li class="clearfix"><h3>Event title</h3><span class="event-start">17:00</span></li>
+								<li class="clearfix"><h3>Event title</h3><span class="event-start">17:00</span></li>
 							</ul>
 						</td>
 							

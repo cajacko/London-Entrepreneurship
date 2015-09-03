@@ -3,6 +3,10 @@
 	background-color: white;
 	margin-top: 67px;
 	
+	th, .day-of-the-month {
+		font-size: 0.9em;
+	}
+	
 	thead {
 		position: fixed;
 		top: 0;
@@ -55,12 +59,13 @@
 		.day-of-month {
 			text-align: right;
 			color: #AFAFAF;
+			margin-bottom: 9px;
 		}
 		
 		.month-inline-title {
 			position: absolute;
 		    top: -24px;
-		    background-color: #E0E0E0;
+		    background-color: rgba(224, 224, 224, 0.84);
 		    font-size: 2em;
 		    padding: 7px 20px;
 		    border-radius: 5px;
@@ -77,9 +82,20 @@
 				margin: 0;
 				padding: 0;
 				
-				.event-start, .event-time-seperator, .event-end {
-					font-size: 0.5em;
-					color: grey;	
+				h3, .event-start {
+					font-size: 0.8em;
+					line-height: 1.5;
+				}
+				
+				h3 {
+				    font-weight: 400;
+				    margin: 0;
+				    float: left;
+				}
+								
+				.event-start {
+					color: grey;
+					float: right;	
 				}
 			}
 		}
