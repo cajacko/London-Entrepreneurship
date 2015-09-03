@@ -84,6 +84,76 @@ REGISTER POST TYPEs
 	}
 	
 	add_action( 'init', 'london_entrepreneurship_register_events_post_type' );
+
+/* -----------------------------
+STRING TO DATE
+----------------------------- */
+	function london_entrepreneurship_str_to_date( $string ) {
+		//Use http://www.phpliveregex.com/ to test regex
+		
+		$day_of_the_week_array = array(
+			'mon' => 1,
+			'tue' => 2,
+			'wed' => 3,
+			'thu' => 4,
+			'fri' => 5,
+			'sat' => 6,
+			'sun' => 7,
+		);
+		
+		$now_string = strtotime('now');
+		
+		/**
+		 * Match strings with the format '08:30()-()10:00[]Fri[]Sep[]4'
+		 * With unlimited or no spaces allowed inbetween the brackets
+		 * With at least one space allowed inbetween the square brackets
+		 */
+		preg_match_all( '/([0-9]{1,2}:[0-9]{1,2}) *- *([0-9]{1,2}:[0-9]{1,2}) +([A-Za-z]+) +([A-Za-z]+) +([0-9]+) *$/', $string, $matches );
+		
+		if( !empty($matches[0]) ) {
+			
+			$start_time = $matches[1][0];
+			$end_time = $matches[2][0];
+			$day = $matches[5][0];
+			$week_day = $day_of_the_week_array[ strtolower( $matches[3][0] ) ];
+			$month = $matches[4][0];
+			$year = date( 'Y' );
+			
+			$date_string = $day . ' ' . $month . ' ' . $year;
+			$day_of_week = date( 'N', strtotime( $date_string ) );
+			
+			if( $day_of_week != $week_day ) {
+				$year++;
+				$date_string = $day . ' ' . $month . ' ' . $year;
+				$day_of_week = date( 'N', strtotime( $date_string ) );
+				
+				if( $day_of_week != $week_day ) {
+					$year--;
+					$year--;
+					$date_string = $day . ' ' . $month . ' ' . $year;
+					$day_of_week = date( 'N', strtotime( $date_string ) );
+					
+					if( $day_of_week != $week_day ) {
+						return false;
+					}
+				}
+			}
+			
+			$start_date = date( 'Y-m-d H:i:s', strtotime($date_string . ' ' . $start_time) );
+			$end_date = date( 'Y-m-d H:i:s', strtotime($date_string . ' ' . $end_time) );
+			
+			$array = array(
+				'start_date' => $start_date,
+				'end_date' => $end_date,
+			);
+			
+			if( true ) {	
+				return $array;	
+			}
+		}
+		
+		return false;
+	}
 	
 /* -----------------------------
 DISPLAY THE CALENDAR
