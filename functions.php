@@ -54,15 +54,31 @@ ADD STYLES AND SCRIPTS
 	add_action( 'wp_enqueue_scripts', 'london_entrepreneurship_scripts' );
 
 /* -----------------------------
-DISPLAY THE CALENDAR
+REGISTER POST TYPEs
 ----------------------------- */
 	function london_entrepreneurship_register_events_post_type() {
-		register_post_type( 'event',
+		$args = array(
+	      'public' => true,
+	      'label'  => 'Events',
+	      'supports' => array( 'title', 'author' )
+	    );
+	    
+	    register_post_type( 'events', $args );
+	    
+	    $args = array(
+	      'public' => true,
+	      'label'  => 'APIs',
+	      'supports' => array( 'title', 'custom-fields' )
+	    );
+	    
+	    register_post_type( 'api', $args );
+	    
+	    register_taxonomy(
+			'api-categories',
+			'api',
 			array(
-				'labels' => array(
-					'name' => __( 'Events' ),
-					'singular_name' => __( 'Event' )
-				),
+				'label' => __( 'API Categories' ),
+				'hierarchical' => true,
 			)
 		);
 	}
