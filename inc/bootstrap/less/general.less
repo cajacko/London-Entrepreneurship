@@ -1,18 +1,30 @@
 #calendar {
 	width: 100%;
 	background-color: white;
+	margin-top: 67px;
 	
 	thead {
 		position: fixed;
 		top: 0;
 		background-color: white;
 		border-bottom: 1px solid @border-color;
+		padding: 5px 0;
+		z-index: 2;
 		
 		th {
 			width: 2000px;
+			font-weight: 400;
+			padding: 1px 5px;
 			
 			h2 {
+				line-height: 1;
 				margin: 0;
+				margin-left: 10px;
+				
+				#year-title {
+					font-weight: 100;
+					margin-left: 10px;
+				}
 			}
 		}
 		
@@ -37,14 +49,25 @@
 		height: 100px;	
 		width: 2000px;
 		border: 1px solid @border-color;
+		padding: 5px;
+		position: relative;
 		
 		.day-of-month {
 			text-align: right;
 			color: #AFAFAF;
 		}
 		
-		
-		
+		.month-inline-title {
+			position: absolute;
+		    top: -24px;
+		    background-color: #E0E0E0;
+		    font-size: 2em;
+		    padding: 7px 20px;
+		    border-radius: 5px;
+		    line-height: 1;
+		    left: 10px;
+		}
+
 		ul {
 			margin: 0;
 			padding: 0;

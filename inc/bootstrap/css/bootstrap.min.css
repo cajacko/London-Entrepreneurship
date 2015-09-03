@@ -6297,12 +6297,22 @@ button.close {
   top: 0;
   background-color: white;
   border-bottom: 1px solid #dadada;
+  padding: 5px 0;
+  z-index: 2;
 }
 #calendar thead th {
   width: 2000px;
+  font-weight: 400;
+  padding: 1px 5px;
 }
 #calendar thead th h2 {
+  line-height: 1;
   margin: 0;
+  margin-left: 10px;
+}
+#calendar thead th h2 #year-title {
+  font-weight: 100;
+  margin-left: 10px;
 }
 #calendar thead #days-of-week th {
   text-align: right;
@@ -6317,10 +6327,22 @@ button.close {
   height: 100px;
   width: 2000px;
   border: 1px solid #dadada;
+  padding: 5px;
+  position: relative;
 }
 #calendar td .day-of-month {
   text-align: right;
   color: #AFAFAF;
+}
+#calendar td .month-inline-title {
+  position: absolute;
+  top: -24px;
+  background-color: #E0E0E0;
+  font-size: 2em;
+  padding: 7px 20px;
+  border-radius: 5px;
+  line-height: 1;
+  left: 10px;
 }
 #calendar td ul {
   margin: 0;
