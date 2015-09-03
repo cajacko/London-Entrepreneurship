@@ -52,3 +52,95 @@ ADD STYLES AND SCRIPTS
 	}
 	
 	add_action( 'wp_enqueue_scripts', 'london_entrepreneurship_scripts' );
+	
+	function london_entrepreneurship_display_calendar($year = false, $month = false, $day = false, $active_month = true) {
+		if( !$year ) {
+			$year = date( 'Y' );	
+		}
+		
+		if( !$month ) {
+			$month = date( 'm' );
+		}
+		
+		if( !$day ) {
+			$day = date( 'd' );
+		}
+		
+		$date_string = $year . '-' . $month . '-' . $day;
+		$current_date = strtotime( $date_string );
+		?>
+
+		<table id="calendar">
+			<thead>
+				<tr>
+					<th colspan="7">
+						<h2><span id="month-title"><?php echo date( 'F', $current_date ); ?></span><span id="year-title"><?php echo date( 'Y', $current_date ); ?></span></h2>
+					</th>
+				</tr>
+				<tr id="days-of-week">
+					<th>Mon</th>
+					<th>Tue</th>
+					<th>Wed</th>
+					<th>Thu</th>
+					<th>Fri</th>
+					<th>Sat</th>
+					<th>Sun</th>
+				</tr>
+			</thead>
+			
+			<tbody>
+				<?php 
+					$current_day_of_week = date( 'N', $current_date );
+	
+					if( $current_day_of_week != 1 ) {
+						$offset = $current_day_of_week - 1;
+						$current_date = strtotime( $date_string . ' -' . $offset . 'days' );
+					}
+
+					for( $i = 1; $i <= 140; $i++ ) {
+						$current_day_of_month = date( 'd', $current_date );
+						$current_day_of_week = date( 'N', $current_date );
+						$current_month = date( 'm', $current_date );
+						$end_of_month = date( 't', $current_date );
+				
+						if( $current_day_of_week == 1): ?>
+							<tr>
+						<?php endif; ?>
+							
+						<td class="<?php if( $current_day_of_week < 6 ): echo 'weekday'; else: echo 'weekend'; endif; ?><?php if( $active_month && $current_month == $month ): echo ' active-month'; endif; ?>">
+							<?php if( ( $end_of_month - 7 ) < $current_day_of_month && $current_day_of_week == 1 ): ?>
+								<span class="month-inline-title">
+									<?php 
+										$next_month = $current_month + 1;
+										$next_month = DateTime::createFromFormat('!m', $next_month);
+										echo $next_month->format('F');
+									?>
+								</span>
+							<?php endif; ?>
+
+							<div class="day-of-month">
+								<?php if( $current_day_of_month == 1 ): ?>
+									<span class="day-first-of-month"><?php echo date( 'M', $current_date ); ?></span>
+								<?php endif; ?>
+								
+								<?php echo $current_day_of_month; ?>
+							</div>
+							<ul>
+								<li><span class="event-start">17:00</span><span class="event-time-seperator">-</span><span class="event-end">19:00</span>Event title</li>
+								<li><span class="event-start">17:00</span><span class="event-time-seperator">-</span><span class="event-end">19:00</span>Event title</li>
+								<li><span class="event-start">17:00</span><span class="event-time-seperator">-</span><span class="event-end">19:00</span>Event title</li>
+							</ul>
+						</td>
+							
+						<?php if( $cuurent_day_of_week == 7 ): ?>
+							</tr>
+						<?php endif;
+							
+						$current_date = strtotime( date( 'Y-m-d', $current_date ) . ' +1 day' );							
+					}	
+				?>
+			</tbody>
+		</table>
+
+	<?php }
+	

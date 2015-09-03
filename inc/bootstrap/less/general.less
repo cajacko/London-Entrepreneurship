@@ -1,68 +1,64 @@
-#less-vars {
-	height: @min-height-for-fixed-nav;	
-}
-
-p, ul, ol {
-	margin: 1em 0;
-}
-
-ul ul, ol ol, ul ol, ol ul {
-	margin-top: 0;
-}
-
-a {
-	cursor: pointer;	
-}
-
-//Used to make sure in page anchor links display the content below the fixed header
-a.anchor {
-    display: block;
-    position: relative;
-    visibility: hidden;
-    top: -@default-content-top-padding;
-}
-
-.wrap {
-	padding-left: @global-padding + @extra-padding-for-scrollbar;
-	padding-right: @global-padding + @extra-padding-for-scrollbar;
-	margin-left: auto;
-	margin-right: auto;
-	max-width: @wrap-max-width;
+#calendar {
 	width: 100%;
-	position: relative;
-}
-
-.display-table {
-	display: table;
-}
-
-.display-table-row {
-	display: table-row;
-}
-
-.display-table-cell {
-	display: table-cell;
-}
-
-.hide-without-javascript {
-	display: none;	
-}
-
-/* -----------------------------
-CONTENT
------------------------------ */	
-	main {
-		padding-top: @default-content-top-padding;
-		padding-bottom: @global-padding;
+	background-color: white;
+	
+	thead {
+		position: fixed;
+		top: 0;
+		background-color: white;
+		border-bottom: 1px solid @border-color;
 		
-		#main-wrap {
-			margin-top: @global-padding;
+		th {
+			width: 2000px;
+			
+			h2 {
+				margin: 0;
+			}
+		}
+		
+		#days-of-week {
+			th {
+				text-align: right;
+			}
 		}
 	}
 	
-	@media (max-width: @mobile-width) {
-		#main-wrap {
-			padding-left: 0;
-			padding-right: 0;
+	.weekend {
+		background-color: #F1F1F1;
+	}
+	
+	.active-month {
+		.day-of-month {
+			color: black;
 		}
 	}
+	
+	td {
+		height: 100px;	
+		width: 2000px;
+		border: 1px solid @border-color;
+		
+		.day-of-month {
+			text-align: right;
+			color: #AFAFAF;
+		}
+		
+		
+		
+		ul {
+			margin: 0;
+			padding: 0;
+			list-style-type: none;
+			
+			li {
+				margin: 0;
+				padding: 0;
+				
+				.event-start, .event-time-seperator, .event-end {
+					font-size: 0.5em;
+					color: grey;	
+				}
+			}
+		}
+	}
+}
