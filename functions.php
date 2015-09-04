@@ -185,6 +185,7 @@ DISPLAY THE CALENDAR
 		
 		$date_string = $year . '-' . $month . '-' . $day;
 		$current_date = strtotime( $date_string );
+		$today_string = date( 'Y-m-d' );
 		?>
 
 		<table id="calendar">
@@ -215,6 +216,7 @@ DISPLAY THE CALENDAR
 					}
 					
 					for( $i = 1; $i <= 140; $i++ ) {
+						$current_date_string = date( 'Y-m-d', $current_date );
 						$current_day_of_month = date( 'd', $current_date );
 						$current_day_of_week = date( 'N', $current_date );
 						$current_month = date( 'm', $current_date );
@@ -224,52 +226,56 @@ DISPLAY THE CALENDAR
 							<tr>
 						<?php endif; ?>
 							
-						<td class="<?php if( $current_day_of_week < 6 ): echo 'weekday'; else: echo 'weekend'; endif; ?><?php if( $active_month && $current_month == $month ): echo ' active-month'; endif; ?>">
-							<?php if( ( $end_of_month - 7 ) < $current_day_of_month && $current_day_of_week == 1 && $i > 7): ?>
-								<span class="month-inline-title">
-									<?php 
-										$next_month = $current_month + 1;
-										$next_month = DateTime::createFromFormat('!m', $next_month);
-										echo $next_month->format('F');
-									?>
-								</span>
-							<?php endif; ?>
-
-							<div class="day-of-month">
-								<?php if( $current_day_of_month == 1 ): ?>
-									<span class="day-first-of-month"><?php echo date( 'M', $current_date ); ?></span>
+						<td <?php if( $current_date_string == $today_string ): echo 'id="today" '; endif; ?>class="<?php if( $current_day_of_week < 6 ): echo 'weekday'; else: echo 'weekend'; endif; ?><?php if( $active_month && $current_month == $month ): echo ' active-month'; endif; ?>">
+							<div class="day-wrap">
+								<?php if( ( $end_of_month - 7 ) < $current_day_of_month && $current_day_of_week == 1 && $i > 7): ?>
+									<span class="month-inline-title">
+										<?php 
+											$next_month = $current_month + 1;
+											$next_month = DateTime::createFromFormat('!m', $next_month);
+											echo $next_month->format('F');
+										?>
+									</span>
 								<?php endif; ?>
+	
+								<div class="day-of-month">
+									<?php if( $current_day_of_month == 1 ): ?>
+										<span class="day-first-of-month"><?php echo date( 'M', $current_date ); ?></span>
+									<?php endif; ?>
+									
+									<span class="day-of-month-number">
+										<?php echo date( 'j', $current_date );; ?>
+									</span>
+								</div>
 								
-								<?php echo $current_day_of_month; ?>
+								<?php
+									$event_query = array(
+										'post_type' => 'events',
+										'post_status' => 'publish',
+										'meta_value' => date( 'Y-m-d', $current_date ),
+										'meta_key' => 'start_date',
+										'meta_compare' => 'LIKE',
+										'posts_per_page' => -1,
+									);
+	
+									$events = get_posts( $event_query );
+								?>
+								
+								<?php if( !empty( $events ) ): ?>
+									<ul>
+										<?php foreach( $events as $event ) : ?>
+											<li class="clearfix"><h3><?php echo $event->post_title; ?></h3><span class="event-start"><?php london_entrepreneurship_the_time_from_date( 'start', $event->ID ); ?></span></li>
+										<?php endforeach; ?>
+									</ul>
+								<?php endif; ?>
 							</div>
-							
-							<?php
-								$event_query = array(
-									'post_type' => 'events',
-									'post_status' => 'publish',
-									'meta_value' => date( 'Y-m-d', $current_date ),
-									'meta_key' => 'start_date',
-									'meta_compare' => 'LIKE',
-									'posts_per_page' => -1,
-								);
-
-								$events = get_posts( $event_query );
-							?>
-							
-							<?php if( !empty( $events ) ): ?>
-								<ul>
-									<?php foreach( $events as $event ) : ?>
-										<li class="clearfix"><h3><?php echo $event->post_title; ?></h3><span class="event-start"><?php london_entrepreneurship_the_time_from_date( 'start', $event->ID ); ?></span></li>
-									<?php endforeach; ?>
-								</ul>
-							<?php endif; ?>
 						</td>
 							
 						<?php if( $cuurent_day_of_week == 7 ): ?>
 							</tr>
 						<?php endif;
 							
-						$current_date = strtotime( date( 'Y-m-d', $current_date ) . ' +1 day' );							
+						$current_date = strtotime( $current_date_string . ' +1 day' );							
 					}	
 				?>
 			</tbody>

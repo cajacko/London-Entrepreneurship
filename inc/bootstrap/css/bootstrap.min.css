@@ -6292,10 +6292,15 @@ button.close {
   width: 100%;
   background-color: white;
   margin-top: 67px;
+  table-layout: fixed;
 }
 #calendar th,
 #calendar .day-of-the-month {
   font-size: 0.9em;
+}
+#calendar th,
+#calendar td {
+  width: 2000px;
 }
 #calendar thead {
   position: fixed;
@@ -6306,7 +6311,6 @@ button.close {
   z-index: 2;
 }
 #calendar thead th {
-  width: 2000px;
   font-weight: 400;
   padding: 1px 5px;
 }
@@ -6328,19 +6332,34 @@ button.close {
 #calendar .active-month .day-of-month {
   color: black;
 }
+#calendar #today .day-of-month-number {
+  position: relative;
+  z-index: 2;
+  background-color: red;
+  color: white;
+  height: 24px;
+  display: inline-block;
+  min-width: 24px;
+  text-align: center;
+  border-radius: 50%;
+}
 #calendar td {
   height: 100px;
-  width: 2000px;
   border: 1px solid #dadada;
   padding: 5px;
   position: relative;
+  vertical-align: top;
 }
-#calendar td .day-of-month {
+#calendar td .day-wrap {
+  height: 170px;
+  overflow: hidden;
+}
+#calendar td .day-wrap .day-of-month {
   text-align: right;
   color: #AFAFAF;
   margin-bottom: 9px;
 }
-#calendar td .month-inline-title {
+#calendar td .day-wrap .month-inline-title {
   position: absolute;
   top: -24px;
   background-color: rgba(224, 224, 224, 0.84);
@@ -6350,26 +6369,26 @@ button.close {
   line-height: 1;
   left: 10px;
 }
-#calendar td ul {
+#calendar td .day-wrap ul {
   margin: 0;
   padding: 0;
   list-style-type: none;
 }
-#calendar td ul li {
+#calendar td .day-wrap ul li {
   margin: 0;
   padding: 0;
 }
-#calendar td ul li h3,
-#calendar td ul li .event-start {
+#calendar td .day-wrap ul li h3,
+#calendar td .day-wrap ul li .event-start {
   font-size: 0.8em;
   line-height: 1.5;
 }
-#calendar td ul li h3 {
+#calendar td .day-wrap ul li h3 {
   font-weight: 400;
   margin: 0;
   float: left;
 }
-#calendar td ul li .event-start {
+#calendar td .day-wrap ul li .event-start {
   color: grey;
   float: right;
 }
