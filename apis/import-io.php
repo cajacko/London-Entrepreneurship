@@ -18,24 +18,77 @@
 	
 		$json = json_decode( file_get_contents( $url ) );
 		
-		foreach( $json->results as $result ) {
-			$dates = london_entrepreneurship_str_to_date( $result->date );
-			
-			if( $dates ) {
+		if( !empty( $json->results ) ) {
+		
+			foreach( $json->results as $result ) {
+				$dates = london_entrepreneurship_str_to_date( $result->date );
+				
 				$array = array(
-					'title' => $result->title,
-					'original_date' => $result->date,
-					'start_date' => $dates['start_date'],
-					'end_date' => $dates['end_date'],
-					'description' => $result->description,
-					'tags' => $result->tag,
-					'location' => $result->location,
-					'thumbnail' => $result->image,
-					'url' => $result->url,
+					'original_title' => $result->title,
+					'original_date_string' => $result->date,
+					'original_description' => $result->description,
+					'original_tags' => $result->tag,
+					'original_location' => $result->location,
+					'original_thumbnail' => $result->image,
+					'original_url' => $result->url,
 				);
 				
-				print_r( $array );	
-			}
-		}	
+				$query = array(
+					'meta_query' => array(
+						'relation' => 'OR',
+						array(
+							'relation' => 'AND',
+							array(
+								'key' => 'original_title',
+								'value' => $result->title,
+							),	
+							array(
+								'key' => 'original_date_string',
+								'value' => $result->date,
+							),
+						),
+						array(
+							'key' => 'original_url',
+							'value' => $result->url,
+						),
+					),	
+				);
+				
+				$existing_post = get_posts( $query );
+				
+				$post_array = array(
+					'post_type' => 'events',	
+					'post_title' => $array['original_title'],
+					'post_content' => $array['original_description'],
+				);
+				
+				if( $dates ) {
+					$array['start_date'] = $dates['start_date'];
+					$array['end_date'] = $dates['end_date'];
+					
+					$post_array['post_status'] = 'publish';
+				} else {
+					$post_array['post_status'] = 'draft';
+				}
+				
+				if( empty( $existing_post ) ) {
+					$post_id = wp_insert_post( $post_array );
+				} else {
+					$post_id = $existing_post[0]->ID;
+					$post_array['ID'] = $post_id;
+					
+					wp_update_post( $post_array );
+				}
+
+				foreach( $array as $name => $value ) {
+					update_post_meta( $post_id, $name, $value );	
+				}
+				
+				
+				print_r( $array );
+			}	
+		} else {
+			break;
+		}
 	}
 ?>

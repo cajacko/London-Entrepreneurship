@@ -60,7 +60,7 @@ REGISTER POST TYPEs
 		$args = array(
 	      'public' => true,
 	      'label'  => 'Events',
-	      'supports' => array( 'title', 'author' )
+	      'supports' => array( 'title', 'editor', 'custom-fields', 'thumbnail', 'revisions' )
 	    );
 	    
 	    register_post_type( 'events', $args );
