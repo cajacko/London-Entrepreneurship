@@ -34,18 +34,18 @@ ADD/REMOVE THEME SUPPORT
 ADD STYLES AND SCRIPTS
 ----------------------------- */
 	function london_entrepreneurship_scripts() {
-		/*
+		/**
 		 * Add the bootstrap stylesheet and JavaScript
 		 */
 		wp_enqueue_style( 'london-entrepreneurship-bootstrap-style',  get_template_directory_uri()  . '/inc/bootstrap/css/bootstrap.min.css' );
 		wp_enqueue_script( 'london-entrepreneurship-bootstrap-script', get_template_directory_uri()  . '/inc/bootstrap/js/bootstrap.min.js', array( 'jquery' ) );
 		
-		/*
+		/**
 		 * Add the template.js file which provides global functions used by other JavaScript files.
 		 */
 		wp_enqueue_script( 'london-entrepreneurship-template-script', get_template_directory_uri()  . '/js/template.js', array( 'jquery' ) );
 		
-		/*
+		/**
 		 * Add the core setup.js file which is used on every page.
 		 */
 		wp_enqueue_script( 'london-entrepreneurship-setup-script', get_template_directory_uri()  . '/js/setup.js', array( 'jquery' ) );
@@ -54,8 +54,12 @@ ADD STYLES AND SCRIPTS
 	add_action( 'wp_enqueue_scripts', 'london_entrepreneurship_scripts' );
 
 /* -----------------------------
-REGISTER POST TYPEs
+REGISTER POST TYPES AND TAXS
 ----------------------------- */
+	/**
+	 * Register events and api post types
+	 * Register API categories
+	 */
 	function london_entrepreneurship_register_events_post_type() {
 		$args = array(
 	      'public' => true,
@@ -88,6 +92,10 @@ REGISTER POST TYPEs
 /* -----------------------------
 STRING TO DATE
 ----------------------------- */
+	/**
+	 * Take a string and convert it into a start and end date
+	 * returns false if a date can't be parsed
+	 */
 	function london_entrepreneurship_str_to_date( $string ) {
 		//Use http://www.phpliveregex.com/ to test regex
 		
@@ -158,6 +166,9 @@ STRING TO DATE
 /* -----------------------------
 DISPLAY THE CALENDAR
 ----------------------------- */
+	/**
+	 * Echo the start time of the event
+	 */
 	function london_entrepreneurship_the_time_from_date( $start_end, $id ) {
 		if( $start_end == 'start' ) {
 			$date = get_post_meta( $id, 'start_date', true );
@@ -170,6 +181,9 @@ DISPLAY THE CALENDAR
 		echo $time;
 	}
 	
+	/**
+	 * Returns the url of the event
+	 */
 	function london_entrepreneurship_get_the_event_external_url( $id ) {
 		$url = get_post_meta( $id, 'original_url', true );
 		
@@ -180,6 +194,9 @@ DISPLAY THE CALENDAR
 		}
 	}
 	
+	/**
+	 * Display the calendar with all the events in place
+	 */
 	function london_entrepreneurship_display_calendar($year = false, $month = false, $day = false, $active_month = true) {
 		if( !$year ) {
 			$year = date( 'Y' );	
@@ -304,7 +321,7 @@ DISPLAY THE CALENDAR
 	
 	
 /* -----------------------------
-ADD ADMIN PAGE
+ADD OPTIONS PAGE
 ----------------------------- */
 	function london_entrepreneurship_add_options_page() {
 		add_options_page('London Entrepreneurship', 'London Entrepreneurship', 'manage_options', 'london-entrepreneurship', 'london_entrepreneurship_display_options_page');
@@ -313,7 +330,7 @@ ADD ADMIN PAGE
 	add_action( 'admin_menu', 'london_entrepreneurship_add_options_page' );
 
 /* -----------------------------
-RENDER ADMIN PAGE
+RENDER OPTIONS PAGE
 ----------------------------- */	
 	function london_entrepreneurship_display_options_page() {
 		get_template_part( 'admin/options' );	
