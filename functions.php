@@ -170,6 +170,16 @@ DISPLAY THE CALENDAR
 		echo $time;
 	}
 	
+	function london_entrepreneurship_get_the_event_external_url( $id ) {
+		$url = get_post_meta( $id, 'original_url', true );
+		
+		if( $url == '' ) {
+			return false;
+		} else {
+			return $url;
+		}
+	}
+	
 	function london_entrepreneurship_display_calendar($year = false, $month = false, $day = false, $active_month = true) {
 		if( !$year ) {
 			$year = date( 'Y' );	
@@ -256,6 +266,9 @@ DISPLAY THE CALENDAR
 										'meta_key' => 'start_date',
 										'meta_compare' => 'LIKE',
 										'posts_per_page' => -1,
+										'orderby' => 'meta_value',
+										'order' => 'ASC',
+										'meta_type' => 'DATETIME',
 									);
 	
 									$events = get_posts( $event_query );
@@ -264,7 +277,13 @@ DISPLAY THE CALENDAR
 								<?php if( !empty( $events ) ): ?>
 									<ul>
 										<?php foreach( $events as $event ) : ?>
-											<li class="clearfix"><h3><?php echo $event->post_title; ?></h3><span class="event-start"><?php london_entrepreneurship_the_time_from_date( 'start', $event->ID ); ?></span></li>
+											<li class="clearfix">
+												<a target="_blank" href="<?php echo london_entrepreneurship_get_the_event_external_url( $event->ID ); ?>">
+													<h3><?php echo $event->post_title; ?></h3>
+												</a>
+												
+												<span class="event-start"><?php london_entrepreneurship_the_time_from_date( 'start', $event->ID ); ?></span>
+											</li>
 										<?php endforeach; ?>
 									</ul>
 								<?php endif; ?>
