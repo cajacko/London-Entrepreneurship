@@ -2,11 +2,12 @@
 /**
  * The main template file.
  *
- * @package Charlie Jackson
+ * @package London Entrepreneurship
  */
 ?>
 
 <?php get_header(); ?>
-	
+
+	<?php london_entrepreneurship_display_calendar(); ?>	
 
 <?php get_footer(); ?>

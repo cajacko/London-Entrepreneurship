@@ -1,68 +1,135 @@
-#less-vars {
-	height: @min-height-for-fixed-nav;	
-}
-
-p, ul, ol {
-	margin: 1em 0;
-}
-
-ul ul, ol ol, ul ol, ol ul {
-	margin-top: 0;
-}
-
-a {
-	cursor: pointer;	
-}
-
-//Used to make sure in page anchor links display the content below the fixed header
-a.anchor {
-    display: block;
-    position: relative;
-    visibility: hidden;
-    top: -@default-content-top-padding;
-}
-
-.wrap {
-	padding-left: @global-padding + @extra-padding-for-scrollbar;
-	padding-right: @global-padding + @extra-padding-for-scrollbar;
-	margin-left: auto;
-	margin-right: auto;
-	max-width: @wrap-max-width;
+#calendar {
 	width: 100%;
-	position: relative;
-}
-
-.display-table {
-	display: table;
-}
-
-.display-table-row {
-	display: table-row;
-}
-
-.display-table-cell {
-	display: table-cell;
-}
-
-.hide-without-javascript {
-	display: none;	
-}
-
-/* -----------------------------
-CONTENT
------------------------------ */	
-	main {
-		padding-top: @default-content-top-padding;
-		padding-bottom: @global-padding;
+	background-color: white;
+	margin-top: 67px;
+	table-layout: fixed;
+	
+	th, .day-of-the-month {
+		font-size: 0.9em;
+	}
+	
+	th, td {
+		width: 2000px;
+	}
+	
+	thead {
+		position: fixed;
+		top: 0;
+		background-color: white;
+		border-bottom: 1px solid @border-color;
+		padding: 5px 0;
+		z-index: 3;
 		
-		#main-wrap {
-			margin-top: @global-padding;
+		th {
+			font-weight: 400;
+			padding: 1px 5px;
+			
+			h2 {
+				line-height: 1;
+				margin: 0;
+				margin-left: 10px;
+				
+				#year-title {
+					font-weight: 100;
+					margin-left: 10px;
+				}
+			}
+		}
+		
+		#days-of-week {
+			th {
+				text-align: right;
+			}
 		}
 	}
 	
-	@media (max-width: @mobile-width) {
-		#main-wrap {
-			padding-left: 0;
-			padding-right: 0;
+	.weekend {
+		background-color: #F1F1F1;
+	}
+	
+	.active-month {
+		.day-of-month {
+			color: black;
 		}
 	}
+	
+	#today {
+		.day-of-month-number {
+			position: relative;
+		    z-index: 2;
+		    background-color: red;
+		    color: white;
+		    height: 24px;
+		    display: inline-block;
+		    min-width: 24px;
+		    text-align: center;
+		    border-radius: 50%;
+		}
+	}
+	
+	td {
+		height: 100px;	
+		border: 1px solid @border-color;
+		padding: 5px;
+		position: relative;
+		vertical-align: top;
+		
+		.day-wrap {
+			height: 170px;
+			overflow: hidden;
+			
+			.day-of-month {
+				text-align: right;
+				color: #AFAFAF;
+				margin-bottom: 9px;
+			}
+			
+			.month-inline-title {
+				position: absolute;
+			    top: -24px;
+			    background-color: rgba(224, 224, 224, 0.84);
+			    font-size: 2em;
+			    padding: 7px 20px;
+			    border-radius: 5px;
+			    line-height: 1;
+			    left: 10px;
+			}
+	
+			ul {
+				margin: 0;
+				padding: 0;
+				list-style-type: none;
+				
+				li {
+					margin: 0;
+					padding: 0;
+					overflow: hidden;
+					position: relative;
+					
+					h3, .event-start {
+						font-size: 0.8em;
+						line-height: 1.6;
+					}
+					
+					h3 {
+					    font-weight: 400;
+					    margin: 0;
+					    float: left;
+					    position: absolute;
+						width: 2000px;
+						color: inherit;
+					}
+									
+					.event-start {
+						color: grey;
+						float: right;
+						background-color: white;
+					    z-index: 2;
+					    position: relative;
+					    padding-left: 5px;	
+					}
+				}
+			}
+		}
+	}
+}
