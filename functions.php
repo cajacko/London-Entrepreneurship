@@ -302,3 +302,26 @@ DISPLAY THE CALENDAR
 
 	<?php }
 	
+	
+/* -----------------------------
+ADD ADMIN PAGE
+----------------------------- */
+	function london_entrepreneurship_add_options_page() {
+		add_options_page('London Entrepreneurship', 'London Entrepreneurship', 'manage_options', 'london-entrepreneurship', 'london_entrepreneurship_display_options_page');
+	}
+	
+	add_action( 'admin_menu', 'london_entrepreneurship_add_options_page' );
+
+/* -----------------------------
+RENDER ADMIN PAGE
+----------------------------- */	
+	function london_entrepreneurship_display_options_page() {
+		get_template_part( 'admin/options' );	
+	}
+	
+	function cross_site_sync_register_settings() {
+		register_setting( 'london-entrepreneurship-options', 'import_io_user_value' );
+		register_setting( 'london-entrepreneurship-options', 'import_io_api_value' );
+	}
+
+	add_action( 'admin_init', 'cross_site_sync_register_settings' );
