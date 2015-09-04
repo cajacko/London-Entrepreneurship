@@ -157,7 +157,19 @@ STRING TO DATE
 	
 /* -----------------------------
 DISPLAY THE CALENDAR
------------------------------ */	
+----------------------------- */
+	function london_entrepreneurship_the_time_from_date( $start_end, $id ) {
+		if( $start_end == 'start' ) {
+			$date = get_post_meta( $id, 'start_date', true );
+		} else {
+			$date = get_post_meta( $id, 'end_date', true );
+		}
+		
+		$time = date( 'H:i', strtotime( $date ) );
+		
+		echo $time;
+	}
+	
 	function london_entrepreneurship_display_calendar($year = false, $month = false, $day = false, $active_month = true) {
 		if( !$year ) {
 			$year = date( 'Y' );	
@@ -230,11 +242,27 @@ DISPLAY THE CALENDAR
 								
 								<?php echo $current_day_of_month; ?>
 							</div>
-							<ul>
-								<li class="clearfix"><h3>Event title</h3><span class="event-start">17:00</span></li>
-								<li class="clearfix"><h3>Event title</h3><span class="event-start">17:00</span></li>
-								<li class="clearfix"><h3>Event title</h3><span class="event-start">17:00</span></li>
-							</ul>
+							
+							<?php
+								$event_query = array(
+									'post_type' => 'events',
+									'post_status' => 'publish',
+									'meta_value' => date( 'Y-m-d', $current_date ),
+									'meta_key' => 'start_date',
+									'meta_compare' => 'LIKE',
+									'posts_per_page' => -1,
+								);
+
+								$events = get_posts( $event_query );
+							?>
+							
+							<?php if( !empty( $events ) ): ?>
+								<ul>
+									<?php foreach( $events as $event ) : ?>
+										<li class="clearfix"><h3><?php echo $event->post_title; ?></h3><span class="event-start"><?php london_entrepreneurship_the_time_from_date( 'start', $event->ID ); ?></span></li>
+									<?php endforeach; ?>
+								</ul>
+							<?php endif; ?>
 						</td>
 							
 						<?php if( $cuurent_day_of_week == 7 ): ?>

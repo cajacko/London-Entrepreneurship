@@ -34,6 +34,8 @@
 				);
 				
 				$query = array(
+					'post_type' => 'events',
+					'post_status' => 'any',
 					'meta_query' => array(
 						'relation' => 'OR',
 						array(
@@ -83,8 +85,7 @@
 				foreach( $array as $name => $value ) {
 					update_post_meta( $post_id, $name, $value );	
 				}
-				
-				
+
 				print_r( $array );
 			}	
 		} else {
