@@ -1,5 +1,5 @@
 <?php
-	
+
 	/**
 	 * Get the urls to query and the necessary api options
 	 */
@@ -22,18 +22,49 @@
 		
 		if( !empty( $json->results ) ) {
 		
-			foreach( $json->results as $result ) {
-				$dates = london_entrepreneurship_str_to_date( $result->date );
+			foreach( $json->results as $result ) {				
+				/**
+				 * Send the date and time to the date function
+				 */
+				if( isset( $result->date ) ) { 
+					$date = $result->date;
+				} else {
+					$date = false;
+				}
 				
-				$array = array(
-					'original_title' => $result->title,
-					'original_date_string' => $result->date,
-					'original_description' => $result->description,
-					'original_tags' => $result->tag,
-					'original_location' => $result->location,
-					'original_thumbnail' => $result->image,
-					'original_url' => $result->url,
-				);
+				if( isset( $result->time ) ) { 
+					if( strpos( $result->time ,'£' ) !== false ) {
+						$price = $result->time;
+						$time = false;
+					} else {
+						$time = $result->time;
+					}
+				} else {
+					$time = false;
+				}
+				
+				$dates = london_entrepreneurship_str_to_date( $date, $time );
+				
+				/**
+				 * Setup the event data in the array
+				 */
+				$array = array();
+				if( isset( $result->title ) ): $array['original_title'] = $result->title; endif;
+				if( isset( $result->date ) ): $array['original_date_string'] = $result->date; endif;
+				if( isset( $result->description ) ): $array['original_description'] = $result->description; endif;
+				if( isset( $result->tag ) ): $array['original_tags'] = $result->tag; endif;
+				if( isset( $result->location ) ): $array['original_location'] = $result->location; endif;
+				if( isset( $result->image ) ): $array['original_thumbnail'] = $result->image; endif;
+				if( isset( $result->url ) ): $array['original_url'] = $result->url; endif;
+				if( isset( $result->time ) ): $array['original_time_string'] = $result->time; endif;
+				
+				if( isset( $result->price ) || isset( $price ) ) { 
+					if( isset( $price ) ) {
+						$array['original_price'] = $price;
+					} else {
+						$array['original_price'] = $result->price;
+					} 
+				}
 				
 				/**
 				 * Check if the post already exists
@@ -82,25 +113,25 @@
 				 * If the post doesn't already exist then add it. Otherwise update the post.
 				 */
 				if( empty( $existing_post ) ) {
-					$post_id = wp_insert_post( $post_array );
+					//$post_id = wp_insert_post( $post_array );
 				} else {
-					$post_id = $existing_post[0]->ID;
-					$post_array['ID'] = $post_id;
+					//$post_id = $existing_post[0]->ID;
+					//$post_array['ID'] = $post_id;
 					
-					wp_update_post( $post_array );
+					//wp_update_post( $post_array );
 				}
 				
 				/**
 				 * Add all the relevant post meta
 				 */
 				foreach( $array as $name => $value ) {
-					update_post_meta( $post_id, $name, $value );	
+					//update_post_meta( $post_id, $name, $value );	
 				}
 				
 				/**
 				 * Print the data to check what was returned
 				 */
-				print_r( $array );
+				//print_r( $array );
 			}	
 		} else {
 			break;
