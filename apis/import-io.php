@@ -156,13 +156,10 @@
 				 * Print the data to check what was returned
 				 */
 				print_r( $array );
-				break;
 			}
-			break;
 		} else {
 			break;
 		}
-		break;
 	}
 	
 	update_post_meta( get_the_ID(), 'last_finished', date( 'Y-m-d H:i:s' ) );
