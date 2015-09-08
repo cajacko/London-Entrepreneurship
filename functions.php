@@ -161,6 +161,9 @@ STRING TO DATE
 				}
 			} 
 			
+			/**
+			 * Match strings with the format '11/05/2015' and has a seperate time value
+			 */
 			preg_match_all( '/([0-9]{2})\/([0-9]{2})\/([0-9]{4})$/', $date, $matches );
 			
 			if( !empty($matches[0]) ) {
@@ -367,6 +370,94 @@ DISPLAY THE CALENDAR
 
 	<?php }
 	
+/* -----------------------------
+GET API URLS
+----------------------------- */
+	/**
+	 *	Get the urls for an API, which will then 
+	 * be processed to get events
+	 */
+	function london_entrepreneurship_get_api_urls() {
+		$initial_url = get_post_meta( get_the_ID(), 'initial_url', true );
+		$next_page_regex = get_post_meta( get_the_ID(), 'next_page_regex', true );
+		
+		/**
+		 * If there is an initial page to start 
+		 * from and a regex to use then get the 
+		 * urls
+		 */
+		if( $initial_url != '' && $next_page_regex != '' ) {
+			/**
+			 * Set the maximum number of urls to try and find
+			 */
+			$end_loop = get_post_meta( get_the_ID(), 'end_loop', true );
+			$end_loop_val = intval( $end_loop );
+			$max_count = 5; // Default maximum number of iterations
+			
+			if( $end_loop_val ) {
+				$max_count = $end_loop_val;
+			}
+			
+			$continue = true;
+			$current_url = $initial_url;
+			$urls = array();
+			$count = 1;
+			
+			/**
+			 * Keep trying to get the next page of events until: 
+			 * - the count is up or...
+			 * - the page is broken or...
+			 * - there is no match for the regex or...
+			 * - the next page link is the same as the previous one
+			 */
+			while( $continue ) {
+				$urls[] = $current_url;
+				
+				if( $count >= $max_count ) {
+					$continue = false;
+				} else {
+					$page_content = file_get_contents( $current_url );
+					
+					if( $page_content ) {
+	
+						preg_match_all( '/' . $next_page_regex . '/', $page_content, $matches );
+						
+						if( !empty( $matches ) ) {
+						
+							$next_url = end( $matches[0] );
+							
+							if( substr( $next_url, 0, 1 ) == '/' ) {
+								$base_url = get_post_meta( get_the_ID(), 'base_url', true );
+								$next_url = $base_url . $next_url;
+							}
+	
+							$count++;
+							
+							if( $next_url == $current_url ) {
+								$continue = false;
+							}
+							
+							$current_url = $next_url;
+						} else {
+							$continue = false;
+						}
+					} else {
+						return false;
+					}
+				}
+			}
+			
+			delete_post_meta( get_the_ID(), 'url' ); // Remove all previous urls
+			
+			foreach( $urls as $url ) {
+				add_post_meta( get_the_ID(), 'url', $url );	
+			}
+			 
+			print_r( $urls );
+		} else {
+			return false;
+		}
+	}
 	
 /* -----------------------------
 ADD OPTIONS PAGE

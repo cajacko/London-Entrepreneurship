@@ -32,6 +32,9 @@
 					$date = false;
 				}
 				
+				/**
+				 * Get the correct time and price information
+				 */
 				if( isset( $result->time ) ) { 
 					if( strpos( $result->time ,'£' ) !== false ) {
 						$price = $result->time;
