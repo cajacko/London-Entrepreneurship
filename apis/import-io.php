@@ -89,6 +89,17 @@
 							'key' => 'original_url',
 							'value' => $result->url,
 						),
+						array(
+							'relation' => 'AND',
+							array(
+								'key' => 'original_title',
+								'value' => $result->title,
+							),	
+							array(
+								'key' => 'start_date',
+								'value' => $dates['start_date'],
+							),
+						),
 					),	
 				);
 				
@@ -104,6 +115,10 @@
 					$array['start_date'] = $dates['start_date'];
 					$array['end_date'] = $dates['end_date'];
 					
+					if( isset( $dates['no_time'] ) ) {
+						$array['no_time'] = 1;
+					}
+					
 					$post_array['post_status'] = 'publish';
 				} else {
 					$post_array['post_status'] = 'draft';
@@ -113,25 +128,25 @@
 				 * If the post doesn't already exist then add it. Otherwise update the post.
 				 */
 				if( empty( $existing_post ) ) {
-					//$post_id = wp_insert_post( $post_array );
+					$post_id = wp_insert_post( $post_array );
 				} else {
-					//$post_id = $existing_post[0]->ID;
-					//$post_array['ID'] = $post_id;
+					$post_id = $existing_post[0]->ID;
+					$post_array['ID'] = $post_id;
 					
-					//wp_update_post( $post_array );
+					wp_update_post( $post_array );
 				}
-				
+
 				/**
 				 * Add all the relevant post meta
 				 */
 				foreach( $array as $name => $value ) {
-					//update_post_meta( $post_id, $name, $value );	
+					update_post_meta( $post_id, $name, $value );	
 				}
 				
 				/**
 				 * Print the data to check what was returned
 				 */
-				//print_r( $array );
+				print_r( $array );
 			}	
 		} else {
 			break;
