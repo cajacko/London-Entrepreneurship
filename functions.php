@@ -72,7 +72,8 @@ REGISTER POST TYPES AND TAXS
 	    $args = array(
 	      'public' => true,
 	      'label'  => 'APIs',
-	      'supports' => array( 'title', 'custom-fields' )
+	      'supports' => array( 'title', 'custom-fields' ),
+	      'has_archive' => true,
 	    );
 	    
 	    register_post_type( 'api', $args );
@@ -90,6 +91,18 @@ REGISTER POST TYPES AND TAXS
 	add_action( 'init', 'london_entrepreneurship_register_events_post_type' );
 
 /* -----------------------------
+REGISTER POST TYPES AND TAXS
+----------------------------- */
+	function london_entrepreneurship_load_apis( $query ) {
+	    $query->set( 'post_type', 'api' );
+	    $query->set( 'posts_per_page', -1 );
+	}
+	
+	if( is_page( 'api' ) ) {
+		add_action( 'pre_get_posts', 'london_entrepreneurship_load_apis' );
+	}
+
+/* -----------------------------
 STRING TO DATE
 ----------------------------- */
 	/**
@@ -100,21 +113,29 @@ STRING TO DATE
 		//Use http://www.phpliveregex.com/ to test regex
 		
 		if( $date ) {
+			/**
+			 * List all the regex functions
+			 */
 			$functions = array(
 				'weekday_day_month_starttime',
 				'starttime_endtime_weekday_month_day',
 				'day_month_year',
 			);
-
-			$preference = get_post_meta( get_the_ID(), 'regex_preference', true );
 			
+			/**
+			 * Reorder the regex functions if necessary
+			 */
+			$preference = get_post_meta( get_the_ID(), 'regex_preference', true );
 			$preference_key = array_search( $preference, $functions );
 			
 			if( !empty( $preference ) && $preference_key ) {
 				unset( $functions[$preference_key] );
 				array_unshift( $functions, $preference );
 			}
-
+			
+			/**
+			 * Run each regex function until a match is found
+			 */
 			foreach( $functions as $function ) {
 				$result = call_user_func( 'london_entrepreneurship_' . $function, $date, $time );
 				if( $result ) { 
