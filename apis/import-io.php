@@ -77,6 +77,8 @@
 					} 
 				}
 				
+				global $post;
+				
 				/**
 				 * Check if the post already exists
 				 */
@@ -114,7 +116,13 @@
 					),	
 				);
 				
-				$existing_post = get_posts( $query );
+				$existing_post = new WP_Query( $query );
+				
+				wp_reset_postdata();
+				
+				print_r( $query );
+				
+				print_r( $existing_post );
 				
 				$post_array = array(
 					'post_type' => 'events',	
@@ -139,19 +147,21 @@
 				 * If the post doesn't already exist then add it. Otherwise update the post.
 				 */
 				if( empty( $existing_post ) ) {
-					$post_id = wp_insert_post( $post_array );
+					//$post_id = wp_insert_post( $post_array );
+					$array['add_post'] = 'add_post';
 				} else {
-					$post_id = $existing_post[0]->ID;
-					$post_array['ID'] = $post_id;
+					//$post_id = $existing_post[0]->ID;
+					//$post_array['ID'] = $post_id;
 					
-					wp_update_post( $post_array );
+					//wp_update_post( $post_array );
+					$array['update_post'] = 'update_post';
 				}
 
 				/**
 				 * Add all the relevant post meta
 				 */
 				foreach( $array as $name => $value ) {
-					update_post_meta( $post_id, $name, $value );	
+					//update_post_meta( $post_id, $name, $value );	
 				}
 				
 				/**
