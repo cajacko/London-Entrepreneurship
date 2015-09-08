@@ -96,73 +96,108 @@ STRING TO DATE
 	 * Take a string and convert it into a start and end date
 	 * returns false if a date can't be parsed
 	 */
-	function london_entrepreneurship_str_to_date( $string ) {
+	function london_entrepreneurship_str_to_date( $date, $time ) {
 		//Use http://www.phpliveregex.com/ to test regex
 		
-		$day_of_the_week_array = array(
-			'mon' => 1,
-			'tue' => 2,
-			'wed' => 3,
-			'thu' => 4,
-			'fri' => 5,
-			'sat' => 6,
-			'sun' => 7,
-		);
-		
-		$now_string = strtotime('now');
-		
-		/**
-		 * Match strings with the format '08:30()-()10:00[]Fri[]Sep[]4'
-		 * With unlimited or no spaces allowed inbetween the brackets
-		 * With at least one space allowed inbetween the square brackets
-		 */
-		preg_match_all( '/([0-9]{1,2}:[0-9]{1,2}) *- *([0-9]{1,2}:[0-9]{1,2}) +([A-Za-z]+) +([A-Za-z]+) +([0-9]+) *$/', $string, $matches );
-		
-		if( !empty($matches[0]) ) {
+		if( $date ) {
+			$day_of_the_week_array = array(
+				'mon' => 1,
+				'tue' => 2,
+				'wed' => 3,
+				'thu' => 4,
+				'fri' => 5,
+				'sat' => 6,
+				'sun' => 7,
+			);
 			
-			$start_time = $matches[1][0];
-			$end_time = $matches[2][0];
-			$day = $matches[5][0];
-			$week_day = $day_of_the_week_array[ strtolower( $matches[3][0] ) ];
-			$month = $matches[4][0];
-			$year = date( 'Y' );
+			$now_string = strtotime('now');
+
+			/**
+			 * Match strings with the format '08:30()-()10:00[]Fri[]Sep[]4'
+			 * With unlimited or no spaces allowed inbetween the brackets
+			 * With at least one space allowed inbetween the square brackets
+			 */
+			preg_match_all( '/([0-9]{1,2}:[0-9]{1,2}) *- *([0-9]{1,2}:[0-9]{1,2}) +([A-Za-z]+) +([A-Za-z]+) +([0-9]+) *$/', $date, $matches );
 			
-			$date_string = $day . ' ' . $month . ' ' . $year;
-			$day_of_week = date( 'N', strtotime( $date_string ) );
-			
-			if( $day_of_week != $week_day ) {
-				$year++;
+			if( !empty($matches[0]) ) {
+				
+				$start_time = $matches[1][0];
+				$end_time = $matches[2][0];
+				$day = $matches[5][0];
+				$week_day = $day_of_the_week_array[ strtolower( $matches[3][0] ) ];
+				$month = $matches[4][0];
+				$year = date( 'Y' );
+				
 				$date_string = $day . ' ' . $month . ' ' . $year;
 				$day_of_week = date( 'N', strtotime( $date_string ) );
 				
 				if( $day_of_week != $week_day ) {
-					$year--;
-					$year--;
+					$year++;
 					$date_string = $day . ' ' . $month . ' ' . $year;
 					$day_of_week = date( 'N', strtotime( $date_string ) );
 					
 					if( $day_of_week != $week_day ) {
-						return false;
+						$year--;
+						$year--;
+						$date_string = $day . ' ' . $month . ' ' . $year;
+						$day_of_week = date( 'N', strtotime( $date_string ) );
+						
+						if( $day_of_week != $week_day ) {
+							return false;
+						}
 					}
 				}
-			}
+				
+				$start_date = date( 'Y-m-d H:i:s', strtotime($date_string . ' ' . $start_time) );
+				$end_date = date( 'Y-m-d H:i:s', strtotime($date_string . ' ' . $end_time) );
+				
+				$array = array(
+					'start_date' => $start_date,
+					'end_date' => $end_date,
+				);
+				
+				if( true ) {	
+					return $array;	
+				}
+			} 
 			
-			$start_date = date( 'Y-m-d H:i:s', strtotime($date_string . ' ' . $start_time) );
-			$end_date = date( 'Y-m-d H:i:s', strtotime($date_string . ' ' . $end_time) );
+			preg_match_all( '/([0-9]{2})\/([0-9]{2})\/([0-9]{4})$/', $date, $matches );
 			
-			$array = array(
-				'start_date' => $start_date,
-				'end_date' => $end_date,
-			);
-			
-			if( true ) {	
-				return $array;	
+			if( !empty($matches[0]) ) {
+				$date_string = 	$matches[3][0] . '-' . $matches[1][0] . '-' . $matches[2][0];
+				
+				$array = array();
+				
+				/**
+				 * If the time is set the set the start and end time as that 
+				 * time. Make sure to have a function on the display end that 
+				 * doesn't show the end time if the end time is the same as 
+				 * the start time.
+				 */
+				if( $time ) {
+					$start_time = $time;
+					$end_time = $time;		
+				} else {
+					$start_time = '';
+					$end_time = '';	
+					$array['no_time'] = 1;
+				}
+
+				$start_date = date( 'Y-m-d H:i:s', strtotime($date_string . ' ' . $start_time) );
+				$end_date = date( 'Y-m-d H:i:s', strtotime($date_string . ' ' . $end_time) );
+				
+				$array['start_date'] = $start_date;
+				$array['end_date'] = $end_date;
+				
+				if( true ) {	
+					return $array;	
+				}
 			}
 		}
 		
 		return false;
 	}
-	
+		
 /* -----------------------------
 DISPLAY THE CALENDAR
 ----------------------------- */
@@ -170,6 +205,12 @@ DISPLAY THE CALENDAR
 	 * Echo the start time of the event
 	 */
 	function london_entrepreneurship_the_time_from_date( $start_end, $id ) {
+		$has_time = get_post_meta( $id, 'no_time', true );
+		
+		if( $has_time == 1 ) {
+			return false;
+		}
+		
 		if( $start_end == 'start' ) {
 			$date = get_post_meta( $id, 'start_date', true );
 		} else {
@@ -178,7 +219,7 @@ DISPLAY THE CALENDAR
 		
 		$time = date( 'H:i', strtotime( $date ) );
 		
-		echo $time;
+		return $time;
 	}
 	
 	/**
@@ -299,7 +340,14 @@ DISPLAY THE CALENDAR
 													<h3><?php echo $event->post_title; ?></h3>
 												</a>
 												
-												<span class="event-start"><?php london_entrepreneurship_the_time_from_date( 'start', $event->ID ); ?></span>
+												<?php 
+													$time = london_entrepreneurship_the_time_from_date( 'start', $event->ID );
+													
+													if( $time ): ?>
+														<span class="event-start"><?php echo $time; ?></span>
+													<?php endif; 		
+												?>
+												
 											</li>
 										<?php endforeach; ?>
 									</ul>
