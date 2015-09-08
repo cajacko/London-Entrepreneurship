@@ -100,74 +100,109 @@ STRING TO DATE
 		//Use http://www.phpliveregex.com/ to test regex
 		
 		if( $date ) {
-			/**
-			 * Match strings with the format '08:30()-()10:00[]Fri[]Sep[]4'
-			 * With unlimited or no spaces allowed inbetween the brackets
-			 * With at least one space allowed inbetween the square brackets
-			 */
-			preg_match_all( '/(^[A-Za-z]{3}), ([0-9]{1,2}) ([A-Za-z]+) ([0-9]{2}:[0-9]{2}$)/', $date, $matches );
-			
-			if( !empty($matches[0]) ) {
-				
-				$start_time = $matches[4][0];
-				$end_time = $matches[4][0];
-				$day = $matches[2][0];
-				$week_day = $matches[1][0];
-				$month = $matches[3][0];
-				$year = false;
-				
-				return london_entrepreneurship_process_date( $start_time, $end_time, $day, $week_day, $month, $year );
-			}
-			
-			/**
-			 * Match strings with the format '08:30()-()10:00[]Fri[]Sep[]4'
-			 * With unlimited or no spaces allowed inbetween the brackets
-			 * With at least one space allowed inbetween the square brackets
-			 */
-			preg_match_all( '/([0-9]{1,2}:[0-9]{1,2}) *- *([0-9]{1,2}:[0-9]{1,2}) +([A-Za-z]+) +([A-Za-z]+) +([0-9]+) *$/', $date, $matches );
-			
-			if( !empty($matches[0]) ) {
-				
-				$start_time = $matches[1][0];
-				$end_time = $matches[2][0];
-				$day = $matches[5][0];
-				$week_day = $matches[3][0];
-				$month = $matches[4][0];
-				$year = false;
-				
-				return london_entrepreneurship_process_date( $start_time, $end_time, $day, $week_day, $month, $year );
-			} 
-			
-			/**
-			 * Match strings with the format '11/05/2015' and has a seperate time value
-			 */
-			preg_match_all( '/([0-9]{2})\/([0-9]{2})\/([0-9]{4})$/', $date, $matches );
-			
-			if( !empty($matches[0]) ) {
-				/**
-				 * If the time is set the set the start and end time as that 
-				 * time. Make sure to have a function on the display end that 
-				 * doesn't show the end time if the end time is the same as 
-				 * the start time.
-				 */
-				if( $time ) {
-					$start_time = $time;
-					$end_time = $time;		
-				} else {
-					$start_time = '';
-					$end_time = '';	
-				}
+			$functions = array(
+				'weekday_day_month_starttime',
+				'starttime_endtime_weekday_month_day',
+				'day_month_year',
+			);
 
-				$day = $matches[2][0];
-				$week_day = false;
-				$month = $matches[1][0];
-				$year = $matches[3][0];
-				
-				return london_entrepreneurship_process_date( $start_time, $end_time, $day, $week_day, $month, $year );
+			$preference = get_post_meta( get_the_ID(), 'regex_preference', true );
+			
+			$preference_key = array_search( $preference, $functions );
+			
+			if( !empty( $preference ) && $preference_key ) {
+				unset( $functions[$preference_key] );
+				array_unshift( $functions, $preference );
+			}
+
+			foreach( $functions as $function ) {
+				$result = call_user_func( 'london_entrepreneurship_' . $function, $date, $time );
+				if( $result ) { 
+					return $result;
+				}
 			}
 		}
 		
 		return false;
+	}
+
+/* -----------------------------
+REGEX DATE FUNCTIONS
+----------------------------- */	
+	/**
+	 * Match strings with the format 'Wed, 30 Sep 18:00'
+	 */
+	function london_entrepreneurship_weekday_day_month_starttime( $date, $time ) {
+		preg_match_all( '/(^[A-Za-z]{3}), ([0-9]{1,2}) ([A-Za-z]+) ([0-9]{2}:[0-9]{2}$)/', $date, $matches );
+		
+		if( !empty($matches[0]) ) {
+			
+			$start_time = $matches[4][0];
+			$end_time = $matches[4][0];
+			$day = $matches[2][0];
+			$week_day = $matches[1][0];
+			$month = $matches[3][0];
+			$year = false;
+			
+			return london_entrepreneurship_process_date( $start_time, $end_time, $day, $week_day, $month, $year );
+		} else {
+			return false;
+		}
+	}
+	
+	/**
+	 * Match strings with the format '08:30()-()10:00[]Fri[]Sep[]4'
+	 * With unlimited or no spaces allowed inbetween the brackets
+	 * With at least one space allowed inbetween the square brackets
+	 */
+	function london_entrepreneurship_starttime_endtime_weekday_month_day( $date, $time ) {
+		preg_match_all( '/([0-9]{1,2}:[0-9]{1,2}) *- *([0-9]{1,2}:[0-9]{1,2}) +([A-Za-z]+) +([A-Za-z]+) +([0-9]+) *$/', $date, $matches );
+		
+		if( !empty($matches[0]) ) {
+			
+			$start_time = $matches[1][0];
+			$end_time = $matches[2][0];
+			$day = $matches[5][0];
+			$week_day = $matches[3][0];
+			$month = $matches[4][0];
+			$year = false;
+			
+			return london_entrepreneurship_process_date( $start_time, $end_time, $day, $week_day, $month, $year );
+		} else {
+			return false;
+		}
+	}
+	
+	/**
+	 * Match strings with the format '11/05/2015' and has a seperate time value
+	 */
+	function london_entrepreneurship_day_month_year( $date, $time ) {
+		preg_match_all( '/([0-9]{2})\/([0-9]{2})\/([0-9]{4})$/', $date, $matches );
+		
+		if( !empty($matches[0]) ) {
+			/**
+			 * If the time is set the set the start and end time as that 
+			 * time. Make sure to have a function on the display end that 
+			 * doesn't show the end time if the end time is the same as 
+			 * the start time.
+			 */
+			if( $time ) {
+				$start_time = $time;
+				$end_time = $time;		
+			} else {
+				$start_time = '';
+				$end_time = '';	
+			}
+
+			$day = $matches[2][0];
+			$week_day = false;
+			$month = $matches[1][0];
+			$year = $matches[3][0];
+			
+			return london_entrepreneurship_process_date( $start_time, $end_time, $day, $week_day, $month, $year );
+		} else {
+			return false;
+		}
 	}
 	
 /* -----------------------------
@@ -214,7 +249,7 @@ PROCESS THE DATE INFO
 				}
 			}
 		} else {
-			$date_string = $day . ' ' . $month . ' ' . $year;
+			$date_string = $year . '-' . $month . '-' . $day;
 		}
 		
 		$start_date = date( 'Y-m-d H:i:s', strtotime($date_string . ' ' . $start_time) );
