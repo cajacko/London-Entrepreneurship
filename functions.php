@@ -91,14 +91,17 @@ REGISTER POST TYPES AND TAXS
 	add_action( 'init', 'london_entrepreneurship_register_events_post_type' );
 
 /* -----------------------------
-REGISTER POST TYPES AND TAXS
+FILTER 
 ----------------------------- */
 	function london_entrepreneurship_load_apis( $query ) {
-	    $query->set( 'post_type', 'api' );
-	    $query->set( 'posts_per_page', -1 );
+	    $query->set( 'posts_per_page', 1 );
+	    $query->set( 'meta_key', 'last_finished' );
+	    $query->set( 'orderby', 'meta_value' );
+	    $query->set( 'order', 'ASC' );
+	    $query->set( 'meta_type', 'DATETIME' );
 	}
 	
-	if( is_page( 'api' ) ) {
+	if( $_GET['post_type'] == 'api' ) {
 		add_action( 'pre_get_posts', 'london_entrepreneurship_load_apis' );
 	}
 

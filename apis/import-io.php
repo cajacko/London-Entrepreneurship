@@ -2,6 +2,8 @@
 	
 	print_r( array(
 		'api' => get_the_title(),
+		'last_started' => get_post_meta( get_the_ID(), 'last_started', true ),
+		'last_finished' => get_post_meta( get_the_ID(), 'last_finished', true ),
 	) );
 	
 	update_post_meta( get_the_ID(), 'last_started', date( 'Y-m-d H:i:s' ) );
