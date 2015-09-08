@@ -101,7 +101,7 @@ FILTER
 	    $query->set( 'meta_type', 'DATETIME' );
 	}
 	
-	if( $_GET['post_type'] == 'api' ) {
+	if( $_GET['post_type'] == 'api' && !is_admin() ) {
 		add_action( 'pre_get_posts', 'london_entrepreneurship_load_apis' );
 	}
 

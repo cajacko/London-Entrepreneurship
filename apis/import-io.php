@@ -77,53 +77,50 @@
 					} 
 				}
 				
-				global $post;
-				
 				/**
 				 * Check if the post already exists
 				 */
-				$query = array(
-					'post_type' => 'events',
-					'post_status' => 'any',
-					'meta_query' => array(
-						'relation' => 'OR',
-						array(
-							'relation' => 'AND',
-							array(
-								'key' => 'original_title',
-								'value' => $result->title,
-							),	
-							array(
-								'key' => 'original_date_string',
-								'value' => $result->date,
-							),
-						),
-						array(
-							'key' => 'original_url',
-							'value' => $result->url,
-						),
-						array(
-							'relation' => 'AND',
-							array(
-								'key' => 'original_title',
-								'value' => $result->title,
-							),	
-							array(
-								'key' => 'start_date',
-								'value' => $dates['start_date'],
-							),
-						),
-					),	
-				);
+				$query = "SELECT SQL_CALC_FOUND_ROWS wp_posts.ID
+					FROM wp_posts 
+					INNER JOIN wp_postmeta 
+						ON ( wp_posts.ID = wp_postmeta.post_id ) 
+					INNER JOIN wp_postmeta AS mt1 ON ( wp_posts.ID = mt1.post_id ) 
+					INNER JOIN wp_postmeta AS mt2 ON ( wp_posts.ID = mt2.post_id ) 
+					INNER JOIN wp_postmeta AS mt3 ON ( wp_posts.ID = mt3.post_id ) 
+					INNER JOIN wp_postmeta AS mt4 ON ( wp_posts.ID = mt4.post_id ) 
+					INNER JOIN wp_postmeta AS mt5 ON ( wp_posts.ID = mt5.post_id ) 
+					
+					WHERE 1=1
+						AND wp_posts.post_type = 'events' 
+						AND (
+							( mt3.meta_key = 'original_url' AND CAST(mt3.meta_value AS CHAR) = '" . $result->url . "' )
+							OR ( 
+									( mt4.meta_key = 'original_title' 
+									AND CAST(mt4.meta_value AS CHAR) = '" . $result->title ."' 
+									)
+								AND 
+									( mt5.meta_key = 'start_date' 
+									AND CAST(mt5.meta_value AS CHAR) = '" . $dates['start_date'] . "' 
+									)
+								)
+							
+							OR ( 
+									( mt4.meta_key = 'original_title' 
+									AND CAST(mt4.meta_value AS CHAR) = '" . $result->title . "' 
+									)
+								AND 
+									( mt5.meta_key = 'original_date_string' 
+									AND CAST(mt5.meta_value AS CHAR) = '" . $result->date . "' 
+									)
+								)
+							)
+					
+					GROUP BY wp_posts.ID";
 				
-				$existing_post = new WP_Query( $query );
+				global $wpdb;
 				
-				wp_reset_postdata();
-				
-				print_r( $query );
-				
-				print_r( $existing_post );
-				
+				$results = $wpdb->get_results( $query );
+
 				$post_array = array(
 					'post_type' => 'events',	
 					'post_title' => $array['original_title'],
@@ -146,28 +143,28 @@
 				/**
 				 * If the post doesn't already exist then add it. Otherwise update the post.
 				 */
-				if( empty( $existing_post ) ) {
-					//$post_id = wp_insert_post( $post_array );
-					$array['add_post'] = 'add_post';
+				if( empty( $results ) ) { 
+					$post_id = wp_insert_post( $post_array );					
 				} else {
-					//$post_id = $existing_post[0]->ID;
-					//$post_array['ID'] = $post_id;
+					$post_id = $results[0]->ID;
+					$post_array['ID'] = $post_id;
 					
-					//wp_update_post( $post_array );
-					$array['update_post'] = 'update_post';
+					wp_update_post( $post_array );
 				}
 
 				/**
 				 * Add all the relevant post meta
 				 */
 				foreach( $array as $name => $value ) {
-					//update_post_meta( $post_id, $name, $value );	
+					update_post_meta( $post_id, $name, $value );	
 				}
 				
 				/**
 				 * Print the data to check what was returned
 				 */
 				print_r( $array );
+				
+				wp_reset_postdata();
 			}
 		} else {
 			break;
