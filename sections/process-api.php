@@ -1,8 +1,5 @@
 <?php
 	while ( have_posts() ) : the_post();
-	
-		the_title();
-	
 		if( $_GET['action'] == 'get_urls' ) {
 			
 			london_entrepreneurship_get_api_urls();
