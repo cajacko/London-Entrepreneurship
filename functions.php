@@ -100,18 +100,25 @@ STRING TO DATE
 		//Use http://www.phpliveregex.com/ to test regex
 		
 		if( $date ) {
-			$day_of_the_week_array = array(
-				'mon' => 1,
-				'tue' => 2,
-				'wed' => 3,
-				'thu' => 4,
-				'fri' => 5,
-				'sat' => 6,
-				'sun' => 7,
-			);
+			/**
+			 * Match strings with the format '08:30()-()10:00[]Fri[]Sep[]4'
+			 * With unlimited or no spaces allowed inbetween the brackets
+			 * With at least one space allowed inbetween the square brackets
+			 */
+			preg_match_all( '/(^[A-Za-z]{3}), ([0-9]{1,2}) ([A-Za-z]+) ([0-9]{2}:[0-9]{2}$)/', $date, $matches );
 			
-			$now_string = strtotime('now');
-
+			if( !empty($matches[0]) ) {
+				
+				$start_time = $matches[4][0];
+				$end_time = $matches[4][0];
+				$day = $matches[2][0];
+				$week_day = $matches[1][0];
+				$month = $matches[3][0];
+				$year = false;
+				
+				return london_entrepreneurship_process_date( $start_time, $end_time, $day, $week_day, $month, $year );
+			}
+			
 			/**
 			 * Match strings with the format '08:30()-()10:00[]Fri[]Sep[]4'
 			 * With unlimited or no spaces allowed inbetween the brackets
@@ -124,41 +131,11 @@ STRING TO DATE
 				$start_time = $matches[1][0];
 				$end_time = $matches[2][0];
 				$day = $matches[5][0];
-				$week_day = $day_of_the_week_array[ strtolower( $matches[3][0] ) ];
+				$week_day = $matches[3][0];
 				$month = $matches[4][0];
-				$year = date( 'Y' );
+				$year = false;
 				
-				$date_string = $day . ' ' . $month . ' ' . $year;
-				$day_of_week = date( 'N', strtotime( $date_string ) );
-				
-				if( $day_of_week != $week_day ) {
-					$year++;
-					$date_string = $day . ' ' . $month . ' ' . $year;
-					$day_of_week = date( 'N', strtotime( $date_string ) );
-					
-					if( $day_of_week != $week_day ) {
-						$year--;
-						$year--;
-						$date_string = $day . ' ' . $month . ' ' . $year;
-						$day_of_week = date( 'N', strtotime( $date_string ) );
-						
-						if( $day_of_week != $week_day ) {
-							return false;
-						}
-					}
-				}
-				
-				$start_date = date( 'Y-m-d H:i:s', strtotime($date_string . ' ' . $start_time) );
-				$end_date = date( 'Y-m-d H:i:s', strtotime($date_string . ' ' . $end_time) );
-				
-				$array = array(
-					'start_date' => $start_date,
-					'end_date' => $end_date,
-				);
-				
-				if( true ) {	
-					return $array;	
-				}
+				return london_entrepreneurship_process_date( $start_time, $end_time, $day, $week_day, $month, $year );
 			} 
 			
 			/**
@@ -167,10 +144,6 @@ STRING TO DATE
 			preg_match_all( '/([0-9]{2})\/([0-9]{2})\/([0-9]{4})$/', $date, $matches );
 			
 			if( !empty($matches[0]) ) {
-				$date_string = 	$matches[3][0] . '-' . $matches[1][0] . '-' . $matches[2][0];
-				
-				$array = array();
-				
 				/**
 				 * If the time is set the set the start and end time as that 
 				 * time. Make sure to have a function on the display end that 
@@ -183,22 +156,80 @@ STRING TO DATE
 				} else {
 					$start_time = '';
 					$end_time = '';	
-					$array['no_time'] = 1;
 				}
 
-				$start_date = date( 'Y-m-d H:i:s', strtotime($date_string . ' ' . $start_time) );
-				$end_date = date( 'Y-m-d H:i:s', strtotime($date_string . ' ' . $end_time) );
+				$day = $matches[2][0];
+				$week_day = false;
+				$month = $matches[1][0];
+				$year = $matches[3][0];
 				
-				$array['start_date'] = $start_date;
-				$array['end_date'] = $end_date;
-				
-				if( true ) {	
-					return $array;	
-				}
+				return london_entrepreneurship_process_date( $start_time, $end_time, $day, $week_day, $month, $year );
 			}
 		}
 		
 		return false;
+	}
+	
+/* -----------------------------
+PROCESS THE DATE INFO
+----------------------------- */
+	/**
+	 * Process the date information from the regex results
+	 */
+	function london_entrepreneurship_process_date( $start_time, $end_time, $day, $week_day, $month, $year ) {
+		if( !$year ) {
+			$day_of_the_week_array = array(
+				'mon' => 1,
+				'tue' => 2,
+				'wed' => 3,
+				'thu' => 4,
+				'fri' => 5,
+				'sat' => 6,
+				'sun' => 7,
+			);
+			
+			$week_day = $day_of_the_week_array[ strtolower( $week_day ) ];
+			$year = date( 'Y' );
+				
+			$date_string = $day . ' ' . $month . ' ' . $year;
+			$day_of_week = date( 'N', strtotime( $date_string ) );
+			
+			/**
+			 * Try and get the correct year
+			 */
+			if( $day_of_week != $week_day ) {
+				$year++;
+				$date_string = $day . ' ' . $month . ' ' . $year;
+				$day_of_week = date( 'N', strtotime( $date_string ) );
+				
+				if( $day_of_week != $week_day ) {
+					$year--;
+					$year--;
+					$date_string = $day . ' ' . $month . ' ' . $year;
+					$day_of_week = date( 'N', strtotime( $date_string ) );
+					
+					if( $day_of_week != $week_day ) {
+						return false;
+					}
+				}
+			}
+		} else {
+			$date_string = $day . ' ' . $month . ' ' . $year;
+		}
+		
+		$start_date = date( 'Y-m-d H:i:s', strtotime($date_string . ' ' . $start_time) );
+		$end_date = date( 'Y-m-d H:i:s', strtotime($date_string . ' ' . $end_time) );
+		
+		$array = array(
+			'start_date' => $start_date,
+			'end_date' => $end_date,
+		);
+		
+		if( $start_time == '' ) {
+			$array['no_time'] = 1;	
+		}
+			
+		return $array;	
 	}
 		
 /* -----------------------------

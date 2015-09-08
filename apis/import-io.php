@@ -131,19 +131,19 @@
 				 * If the post doesn't already exist then add it. Otherwise update the post.
 				 */
 				if( empty( $existing_post ) ) {
-					$post_id = wp_insert_post( $post_array );
+					//$post_id = wp_insert_post( $post_array );
 				} else {
-					$post_id = $existing_post[0]->ID;
-					$post_array['ID'] = $post_id;
+					//$post_id = $existing_post[0]->ID;
+					//$post_array['ID'] = $post_id;
 					
-					wp_update_post( $post_array );
+					//wp_update_post( $post_array );
 				}
 
 				/**
 				 * Add all the relevant post meta
 				 */
 				foreach( $array as $name => $value ) {
-					update_post_meta( $post_id, $name, $value );	
+					//update_post_meta( $post_id, $name, $value );	
 				}
 				
 				/**
