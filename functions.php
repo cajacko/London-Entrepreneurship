@@ -95,7 +95,7 @@ FILTER
 ----------------------------- */
 	function london_entrepreneurship_load_apis( $query ) {
 	    $query->set( 'posts_per_page', 1 );
-	    $query->set( 'meta_key', 'last_finished' );
+	    $query->set( 'meta_key', 'last_started' );
 	    $query->set( 'orderby', 'meta_value' );
 	    $query->set( 'order', 'ASC' );
 	    $query->set( 'meta_type', 'DATETIME' );
