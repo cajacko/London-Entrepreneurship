@@ -13,6 +13,9 @@
     }
 
     function onPageLoad() {
+	    $(function () {
+			$('[data-toggle="popover"]').popover()
+		})
     }
 	
     function onPageLoadOrResize () {

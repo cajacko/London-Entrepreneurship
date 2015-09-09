@@ -1,3 +1,121 @@
+@calendar-header-height: 6rem;
+@calendar-border-color: #E0E0E0;
+
+.table {
+	display: table;
+}
+
+.table-row {
+	display: table-row;
+}
+
+.table-cell {
+	display: table-cell;
+}
+
+#calendar {
+	min-height: 700px;
+	
+	section, #calendar-header {
+		position: absolute;
+	}
+	
+	#calendar-header {
+		top: 0;
+		width: 100%;
+		height: @calendar-header-height;
+		position: relative;
+		
+		h2 {
+			line-height: 1;
+			font-size: 3rem;
+			bottom: 0;
+			margin: 5px 0px 5px 10px;
+			position: absolute;
+			
+			#year-title {
+				font-weight: 100;
+				margin-left: 10px;
+			}
+		}
+	}
+	
+	section {
+		overflow-x: scroll;
+	    overflow-y: auto;
+	    top: @calendar-header-height;
+	    width: 100%;
+	    
+	    .table {
+		    border-collapse: collapse;
+		    
+		    #table-header .table-cell {
+			    border-bottom: 1px solid @calendar-border-color;
+			    text-align: center;
+			    font-weight: 300;
+				padding: 5px 0;
+			}
+			
+			#table-body .table-cell {
+			    border-right: 1px solid @calendar-border-color;
+			}
+		
+			article {
+				width: 400px;
+				display: inline-block;
+			    vertical-align: top;
+			    overflow-y: scroll;
+			    height: 57rem;
+			    overflow-x: hidden;
+			    border-bottom: 1px solid @calendar-border-color;
+			    
+			    header {
+					text-align: center;
+					border-bottom: 1px solid black;
+					padding: 10px 0;  
+				}
+			    
+			    ul {
+				    margin: 0;
+				    padding: 0;
+				    border-right: 1px solid @calendar-border-color;
+				    height: 100%;
+				    list-style: none;
+				    
+				    li:nth-child(even) {
+					    background-color: #F5F5F5;
+					}
+				    
+				    li {
+					    height: 5rem;
+					    border-bottom: 1px solid @calendar-border-color;
+					    height: 5rem;
+						padding: 10px 20px;
+					    
+					    a {
+						    margin-left: 45px;
+						    display: block;
+						    font-size: 1.5rem;
+						    border-left: 3px solid #D2D5EA;
+							padding-left: 10px;
+							overflow: hidden;
+							white-space: nowrap;
+						}
+						
+						.event-start {
+							float: left;
+							font-size: 1.25rem;
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+
+
+/*
 #calendar {
 	width: 100%;
 	background-color: white;
@@ -133,3 +251,4 @@
 		}
 	}
 }
+*/
