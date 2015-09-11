@@ -80,46 +80,55 @@
 				/**
 				 * Check if the post already exists
 				 */
-				$query = "SELECT SQL_CALC_FOUND_ROWS wp_posts.ID
-					FROM wp_posts 
-					INNER JOIN wp_postmeta 
-						ON ( wp_posts.ID = wp_postmeta.post_id ) 
-					INNER JOIN wp_postmeta AS mt1 ON ( wp_posts.ID = mt1.post_id ) 
-					INNER JOIN wp_postmeta AS mt2 ON ( wp_posts.ID = mt2.post_id ) 
-					INNER JOIN wp_postmeta AS mt3 ON ( wp_posts.ID = mt3.post_id ) 
-					INNER JOIN wp_postmeta AS mt4 ON ( wp_posts.ID = mt4.post_id ) 
-					INNER JOIN wp_postmeta AS mt5 ON ( wp_posts.ID = mt5.post_id ) 
-					
-					WHERE 1=1
-						AND wp_posts.post_type = 'events' 
-						AND (
-							( mt3.meta_key = 'original_url' AND CAST(mt3.meta_value AS CHAR) = '" . $result->url . "' )
-							OR ( 
-									( mt4.meta_key = 'original_title' 
-									AND CAST(mt4.meta_value AS CHAR) = '" . $result->title ."' 
-									)
-								AND 
-									( mt5.meta_key = 'start_date' 
-									AND CAST(mt5.meta_value AS CHAR) = '" . $dates['start_date'] . "' 
-									)
-								)
-							
-							OR ( 
-									( mt4.meta_key = 'original_title' 
-									AND CAST(mt4.meta_value AS CHAR) = '" . $result->title . "' 
-									)
-								AND 
-									( mt5.meta_key = 'original_date_string' 
-									AND CAST(mt5.meta_value AS CHAR) = '" . $result->date . "' 
-									)
-								)
-							)
-					
-					GROUP BY wp_posts.ID";
-				
 				global $wpdb;
 				
-				$results = $wpdb->get_results( $query );
+				$results = $wpdb->get_results( $wpdb->prepare( 
+					"
+						SELECT SQL_CALC_FOUND_ROWS wp_posts.ID
+						FROM wp_posts 
+						INNER JOIN wp_postmeta 
+							ON ( wp_posts.ID = wp_postmeta.post_id ) 
+						INNER JOIN wp_postmeta AS mt1 ON ( wp_posts.ID = mt1.post_id ) 
+						INNER JOIN wp_postmeta AS mt2 ON ( wp_posts.ID = mt2.post_id ) 
+						INNER JOIN wp_postmeta AS mt3 ON ( wp_posts.ID = mt3.post_id ) 
+						INNER JOIN wp_postmeta AS mt4 ON ( wp_posts.ID = mt4.post_id ) 
+						INNER JOIN wp_postmeta AS mt5 ON ( wp_posts.ID = mt5.post_id ) 
+						
+						WHERE 1=1
+							AND wp_posts.post_type = 'events' 
+							AND (
+								( mt3.meta_key = 'original_url' AND CAST(mt3.meta_value AS CHAR) = %s )
+								OR ( 
+										( mt4.meta_key = 'original_title' 
+										AND CAST(mt4.meta_value AS CHAR) = %s 
+										)
+									AND 
+										( mt5.meta_key = 'start_date' 
+										AND CAST(mt5.meta_value AS CHAR) = %s 
+										)
+									)
+								
+								OR ( 
+										( mt4.meta_key = 'original_title' 
+										AND CAST(mt4.meta_value AS CHAR) = %s 
+										)
+									AND 
+										( mt5.meta_key = 'original_date_string' 
+										AND CAST(mt5.meta_value AS CHAR) = %s 
+										)
+									)
+								)
+						
+						GROUP BY wp_posts.ID
+					",
+					array(
+						$result->url,
+						$result->title,
+						$dates['start_date'],
+						$result->title,
+						$result->date
+					)
+				) );
 
 				$post_array = array(
 					'post_type' => 'events',	
@@ -134,22 +143,25 @@
 					if( isset( $dates['no_time'] ) ) {
 						$array['no_time'] = 1;
 					}
-					
+
 					$post_array['post_status'] = 'publish';
 				} else {
 					$post_array['post_status'] = 'draft';
+					
 				}
 				
 				/**
 				 * If the post doesn't already exist then add it. Otherwise update the post.
 				 */
 				if( empty( $results ) ) { 
-					$post_id = wp_insert_post( $post_array );					
+					$post_id = wp_insert_post( $post_array );	
+					$array['type'] = 'new post';				
 				} else {
 					$post_id = $results[0]->ID;
 					$post_array['ID'] = $post_id;
 					
 					wp_update_post( $post_array );
+					$array['type'] = 'existing post';
 				}
 
 				/**
