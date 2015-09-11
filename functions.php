@@ -101,7 +101,7 @@ FILTER
 	    $query->set( 'meta_type', 'DATETIME' );
 	}
 	
-	if( $_GET['post_type'] == 'api' ) {
+	if( $_GET['post_type'] == 'api' && !is_admin() ) {
 		add_action( 'pre_get_posts', 'london_entrepreneurship_load_apis' );
 	}
 
@@ -548,6 +548,131 @@ GET API URLS
 			return false;
 		}
 	}
+	
+	function london_entrepreneurship_weekday_weekend( $current_day_of_week ) {
+		if( $current_day_of_week < 6 ) { 
+			echo ' weekday'; 
+		} else {
+			echo ' weekend';
+		}	
+	}
+	
+	/**
+	 * Display the calendar with all the events in place
+	 */
+	function london_entrepreneurship_display_calendar_temp($year = false, $month = false, $day = false, $active_month = true) {
+		if( !$year ) {
+			$year = date( 'Y' );	
+		}
+		
+		if( !$month ) {
+			$month = date( 'm' );
+		}
+		
+		if( !$day ) {
+			$day = date( 'd' );
+		}
+		
+		$date_string = $year . '-' . $month . '-' . $day;
+		$current_date = strtotime( $date_string );
+		$today_string = date( 'Y-m-d' );
+		?>
+
+		<header id="calendar-header">
+			<h2><span id="month-title"><?php echo date( 'F', $current_date ); ?></span><span id="year-title"><?php echo date( 'Y', $current_date ); ?></span></h2>
+		</header>
+		
+		<section>
+			<div class="table">
+				<?php 
+					$current_day_of_week = date( 'N', $current_date );
+					$table = array();
+					
+					for( $i = 0; $i <= 35; $i++ ) {
+						$current_date_string = date( 'Y-m-d', $current_date );
+						
+						$event_query = array(
+							'post_type' => 'events',
+							'post_status' => 'publish',
+							'meta_value' => date( 'Y-m-d', $current_date ),
+							'meta_key' => 'start_date',
+							'meta_compare' => 'LIKE',
+							'posts_per_page' => -1,
+							'orderby' => 'meta_value',
+							'order' => 'ASC',
+							'meta_type' => 'DATETIME',
+						);
+	
+						$events = get_posts( $event_query );
+						
+						$table[$i] = array( 0 => $current_date_string );
+						
+						$row = 1;
+						
+						foreach( $events as $event ) {
+							$table[$i][$row] = $event; 
+							$row++;
+						}
+						
+						$current_date = strtotime( $current_date_string . ' +1 day' );
+					} 	
+				?>
+					
+				<div id="table-header" class="table-row">
+
+					<?php foreach( $table as $row ): 
+						$current_date = strtotime( $row[0] );
+						$current_day_of_week = date( 'N', $current_date );
+						?>
+					
+						<div class="table-cell<?php london_entrepreneurship_weekday_weekend( $current_day_of_week ); ?>"><?php echo date( 'D j', $current_date ); ?></div>
+							
+					<?php endforeach; ?>
+				
+				</div>
+				
+				<div id="table-body" class="table-row">
+				
+					<?php foreach( $table as $row ): 
+						$current_date = strtotime( $row[0] );
+						$current_date_string = date( 'Y-m-d', $current_date );
+						$current_day_of_month = date( 'd', $current_date );
+						$current_day_of_week = date( 'N', $current_date );
+						$current_month = date( 'm', $current_date );
+						$end_of_month = date( 't', $current_date );
+						array_shift( $row ); // Remove the first element of the array, which is the date.
+						
+						?>
+					
+						<div <?php if( $current_date_string == $today_string ): echo 'id="today" '; endif; ?>class="table-cell<?php london_entrepreneurship_weekday_weekend( $current_day_of_week ); ?>">
+							<article class="<?php if( $active_month && $current_month == $month ): echo ' active-month'; endif; ?>">									
+									
+									<?php if( !empty( $row ) ): ?>
+										<ul>
+											<?php foreach( $row as $event ) : ?>
+												<li>
+													<?php $time = london_entrepreneurship_the_time_from_date( 'start', $event->ID ); ?>
+														
+													<?php if( $time ): ?>
+														<span class="event-start"><?php echo $time; ?></span>
+													<?php endif; ?>
+													
+													<a target="_blank" href="<?php echo london_entrepreneurship_get_the_event_external_url( $event->ID ); ?>" data-container="body" data-title="<?php echo $event->post_title; ?>" data-toggle="popover" data-trigger="hover" data-placement="bottom" data-content="<?php echo $event->post_content; ?>">
+														<?php echo $event->post_title; ?>
+													</a>
+												</li>
+											<?php endforeach; ?>
+										</ul>
+									<?php endif; ?>
+								</article>
+						</div>
+							
+					<?php endforeach; ?>
+				
+				</div>
+			</div>		
+		</section>
+	<?php }
 	
 /* -----------------------------
 ADD OPTIONS PAGE
