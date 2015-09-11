@@ -6,10 +6,6 @@
  */
 ?>	
 		</main>
-		
-		<footer>
-			<h2>Signup</h2>
-		</footer>
 			
 		<?php wp_footer(); ?>
 	
