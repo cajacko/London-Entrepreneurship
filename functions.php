@@ -607,63 +607,60 @@ GET API URLS
 						}
 						
 						$current_date = strtotime( $current_date_string . ' +1 day' );
-					} 
+					} 	
+				?>
 					
-					//print_r($table);
+				<div id="table-header" class="table-row">
+
+					<?php foreach( $table as $row ): ?>
 					
-					?>
-					
-					<div id="table-header" class="table-row">
-					
-						<?php foreach( $table as $row ): ?>
-						
-							<div class="table-cell"><?php echo date( 'D j', strtotime( $row[0] ) ); ?></div>
-								
-						<?php endforeach; ?>
-					
-					</div>
-					
-					<div id="table-body" class="table-row">
-					
-						<?php foreach( $table as $row ): 
-							$current_date = strtotime( $row[0] );
-							$current_date_string = date( 'Y-m-d', $current_date );
-							$current_day_of_month = date( 'd', $current_date );
-							$current_day_of_week = date( 'N', $current_date );
-							$current_month = date( 'm', $current_date );
-							$end_of_month = date( 't', $current_date );
+						<div class="table-cell"><?php echo date( 'D j', strtotime( $row[0] ) ); ?></div>
 							
-							?>
-						
-							<div <?php if( $current_date_string == $today_string ): echo 'id="today" '; endif; ?>class="table-cell<?php if( $current_day_of_week < 6 ): echo ' weekday'; else: echo ' weekend'; endif; ?>">
-								<article <?php if( $current_date_string == $today_string ): echo 'id="today" '; endif; ?>class="<?php if( $current_day_of_week < 6 ): echo 'weekday'; else: echo 'weekend'; endif; ?><?php if( $active_month && $current_month == $month ): echo ' active-month'; endif; ?>">									
-										
-										<?php if( !empty( $row ) ): ?>
-											<ul>
-												<?php foreach( $row as $event ) : ?>
-													<li>
-														<?php $time = london_entrepreneurship_the_time_from_date( 'start', $event->ID ); ?>
-															
-														<?php if( $time ): ?>
-															<span class="event-start"><?php echo $time; ?></span>
-														<?php endif; ?>
-														
-														<a target="_blank" href="<?php echo london_entrepreneurship_get_the_event_external_url( $event->ID ); ?>" data-container="body" data-title="<?php echo $event->post_title; ?>" data-toggle="popover" data-trigger="hover" data-placement="bottom" data-content="<?php echo $event->post_content; ?>">
-															<?php echo $event->post_title; ?>
-														</a>
-													</li>
-												<?php endforeach; ?>
-											</ul>
-										<?php endif; ?>
-									</article>
-							</div>
-								
-						<?php endforeach; ?>
-					
-					</div>
+					<?php endforeach; ?>
+				
 				</div>
 				
-			</section>
+				<div id="table-body" class="table-row">
+				
+					<?php foreach( $table as $row ): 
+						$current_date = strtotime( $row[0] );
+						$current_date_string = date( 'Y-m-d', $current_date );
+						$current_day_of_month = date( 'd', $current_date );
+						$current_day_of_week = date( 'N', $current_date );
+						$current_month = date( 'm', $current_date );
+						$end_of_month = date( 't', $current_date );
+						array_shift( $row ); // Remove the first element of the array, which is the date.
+						
+						?>
+					
+						<div <?php if( $current_date_string == $today_string ): echo 'id="today" '; endif; ?>class="table-cell<?php if( $current_day_of_week < 6 ): echo ' weekday'; else: echo ' weekend'; endif; ?>">
+							<article <?php if( $current_date_string == $today_string ): echo 'id="today" '; endif; ?>class="<?php if( $current_day_of_week < 6 ): echo 'weekday'; else: echo 'weekend'; endif; ?><?php if( $active_month && $current_month == $month ): echo ' active-month'; endif; ?>">									
+									
+									<?php if( !empty( $row ) ): ?>
+										<ul>
+											<?php foreach( $row as $event ) : ?>
+												<li>
+													<?php $time = london_entrepreneurship_the_time_from_date( 'start', $event->ID ); ?>
+														
+													<?php if( $time ): ?>
+														<span class="event-start"><?php echo $time; ?></span>
+													<?php endif; ?>
+													
+													<a target="_blank" href="<?php echo london_entrepreneurship_get_the_event_external_url( $event->ID ); ?>" data-container="body" data-title="<?php echo $event->post_title; ?>" data-toggle="popover" data-trigger="hover" data-placement="bottom" data-content="<?php echo $event->post_content; ?>">
+														<?php echo $event->post_title; ?>
+													</a>
+												</li>
+											<?php endforeach; ?>
+										</ul>
+									<?php endif; ?>
+								</article>
+						</div>
+							
+					<?php endforeach; ?>
+				
+				</div>
+			</div>		
+		</section>
 	<?php }
 	
 /* -----------------------------
