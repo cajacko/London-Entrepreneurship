@@ -6330,11 +6330,17 @@ button.close {
 #calendar section .table {
   border-collapse: collapse;
 }
+#calendar section .table #table-header .weekend {
+  color: #B7B7B7;
+}
 #calendar section .table #table-header .table-cell {
   border-bottom: 1px solid #e0e0e0;
   text-align: center;
   font-weight: 300;
   padding: 5px 0;
+}
+#calendar section .table #table-body .weekend {
+  background-color: #FAFAFA;
 }
 #calendar section .table #table-body .table-cell {
   border-right: 1px solid #e0e0e0;

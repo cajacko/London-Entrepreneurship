@@ -49,17 +49,29 @@
 	    .table {
 		    border-collapse: collapse;
 		    
-		    #table-header .table-cell {
-			    border-bottom: 1px solid @calendar-border-color;
-			    text-align: center;
-			    font-weight: 300;
-				padding: 5px 0;
+		    #table-header {
+			    .weekend {
+				    color: #B7B7B7;
+				}
+				
+			    .table-cell {
+				    border-bottom: 1px solid @calendar-border-color;
+				    text-align: center;
+				    font-weight: 300;
+					padding: 5px 0;
+				}
 			}
 			
-			#table-body .table-cell {
-			    border-right: 1px solid @calendar-border-color;
+			#table-body {
+				.weekend {
+					background-color: #FAFAFA;
+				}
+			
+				.table-cell {
+			    	border-right: 1px solid @calendar-border-color;
+			    }
 			}
-		
+
 			article {
 				width: 400px;
 				display: inline-block;

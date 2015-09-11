@@ -549,6 +549,14 @@ GET API URLS
 		}
 	}
 	
+	function london_entrepreneurship_weekday_weekend( $current_day_of_week ) {
+		if( $current_day_of_week < 6 ) { 
+			echo ' weekday'; 
+		} else {
+			echo ' weekend';
+		}	
+	}
+	
 	/**
 	 * Display the calendar with all the events in place
 	 */
@@ -612,9 +620,12 @@ GET API URLS
 					
 				<div id="table-header" class="table-row">
 
-					<?php foreach( $table as $row ): ?>
+					<?php foreach( $table as $row ): 
+						$current_date = strtotime( $row[0] );
+						$current_day_of_week = date( 'N', $current_date );
+						?>
 					
-						<div class="table-cell"><?php echo date( 'D j', strtotime( $row[0] ) ); ?></div>
+						<div class="table-cell<?php london_entrepreneurship_weekday_weekend( $current_day_of_week ); ?>"><?php echo date( 'D j', $current_date ); ?></div>
 							
 					<?php endforeach; ?>
 				
@@ -633,8 +644,8 @@ GET API URLS
 						
 						?>
 					
-						<div <?php if( $current_date_string == $today_string ): echo 'id="today" '; endif; ?>class="table-cell<?php if( $current_day_of_week < 6 ): echo ' weekday'; else: echo ' weekend'; endif; ?>">
-							<article <?php if( $current_date_string == $today_string ): echo 'id="today" '; endif; ?>class="<?php if( $current_day_of_week < 6 ): echo 'weekday'; else: echo 'weekend'; endif; ?><?php if( $active_month && $current_month == $month ): echo ' active-month'; endif; ?>">									
+						<div <?php if( $current_date_string == $today_string ): echo 'id="today" '; endif; ?>class="table-cell<?php london_entrepreneurship_weekday_weekend( $current_day_of_week ); ?>">
+							<article class="<?php if( $active_month && $current_month == $month ): echo ' active-month'; endif; ?>">									
 									
 									<?php if( !empty( $row ) ): ?>
 										<ul>
